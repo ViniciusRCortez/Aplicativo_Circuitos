@@ -5,28 +5,49 @@ from math import exp
 import numpy as np
 import matplotlib.pyplot as plt
 
-R = float(input('Valor do Resistor em Ohms: '))
-C = float(input('Valor do Capacitor em Faradays: '))
-L = float(input('Valor do Indutor em Henrys: '))
-Vi = float(input('Valor da Tensão da Fonte, em regime não-estacionario, em Volts: '))
-fim = (float(input('Valor final do Tempo da simulação em MiliSegundos: ')))/1000
-n = fim/100
 
-#   RC ou RL Serie
-V0 = float(input('Valor da Tensão de Inicial em Volts: '))
-if C != 0 and L == 0:
-    Resultado = lambda t: (V0 - Vi)*(exp(-(1/(R*C)) * t)) # (K - V)e^(-1/rc)t
-elif C == 0 and L != 0:
-    Resultado = lambda t: -R*(V0 - Vi) * (exp(-(R / L) * t))  # -R(K - V)e^(-R/L)t
+def grafico(R, C, L, Vi, V0, tempo):
+    """
+    Plota um grafico interatico depois de passado os valores das variaveis.
+    :param R: Valor do Resistor.
+    :param C: Valor do Capacitor.
+    :param L: Valor do Indutor.
+    :param Vi: Valor da Tensão na fonte, durante o regime não estacionario(t>0+).
+    :param V0: Condição inicial da fonte.
+    :param tempo: Valor do Resistor.
+    """
+    n = tempo / 100
 
-x = np.arange(0, fim + n, n)
-V = np.array([Resultado(t) for t in x])
+    #   RC ou RL Serie
+    if C != 0 and L == 0:
+        Resultado = lambda t: (V0 - Vi) * (exp(-(1 / (R * C)) * t))  # (K - V)e^(-1/rc)t
+    elif C == 0 and L != 0:
+        Resultado = lambda t: -R * (V0 - Vi) * (exp(-(R / L) * t))  # -R(K - V)e^(-R/L)t
+    x = np.arange(0, tempo + n, n)
+    V = np.array([Resultado(t) for t in x])
 
-plt.tight_layout()
-plt.style.use('ggplot')
-plt.plot(x*1000, V, 'r-', label='Vcarga')
-plt.title('Tesão sobre a carga - Serie')
-plt.xlabel('t(ms)')
-plt.ylabel('Vcarga(V)')
-plt.legend(loc='best')
-plt.show()
+    plt.ion()
+    plt.cla()
+    plt.clf()
+    plt.tight_layout()
+    plt.style.use('ggplot')
+    plt.plot(x * 1000, V, 'r-', label='Vcarga')
+    plt.title('Tesão sobre a carga - Serie')
+    plt.xlabel('t(ms)')
+    plt.ylabel('Vcarga(V)')
+    plt.legend(loc='best')
+    plt.pause(0.1)
+    plt.ioff()
+    plt.show()
+
+
+"""R = 10
+C = 1
+C /= 1000000
+L = 0
+L /= 1000
+Vi = 10
+V0 = 0
+tempo = 0.1
+tempo /= 1000
+grafico(R, C, L, Vi, V0, tempo)"""
