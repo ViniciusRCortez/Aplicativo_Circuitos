@@ -6,23 +6,27 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-def grafico(R, C, L, Vi, V0, tempo):
+def grafico(R, C, L, Vf, Vi, tempo, tipo):
     """
     Plota um grafico interatico depois de passado os valores das variaveis.
     :param R: Valor do Resistor.
     :param C: Valor do Capacitor.
     :param L: Valor do Indutor.
-    :param Vi: Valor da Tensão na fonte, durante o regime não estacionario(t>0+).
-    :param V0: Condição inicial da fonte.
+    :param Vf: Valor da Tensão na fonte, durante o regime não estacionario(t>0+).
+    :param Vi: Condição inicial da fonte.
+    :param tipo: Tipo do circuito.
     :param tempo: Valor do Resistor.
     """
     n = tempo / 100
 
     #   RC ou RL Serie
-    if C != 0 and L == 0:
-        Resultado = lambda t: (V0 - Vi) * (exp(-(1 / (R * C)) * t))  # (K - V)e^(-1/rc)t
-    elif C == 0 and L != 0:
-        Resultado = lambda t: -R * (V0 - Vi) * (exp(-(R / L) * t))  # -R(K - V)e^(-R/L)t
+    if tipo == 'RC':
+        Resultado = lambda t: Vf + ((Vi - Vf) * (exp(-(1 / (R * C)) * t))) # Vc = Vf + (Vi - Vf)e^(-1/rc)t
+    elif tipo == 'RL':
+        If = Vf/R
+        Ii = Vi/R
+        Corrente = lambda t: If + ((Ii - If) * (exp((-(R/L)) * t)))  # Il = If + (Ii - If)e^(-R/L)t
+        Resultado = lambda t: Vf-R*Corrente(t)                      #Vl = Vf - Vr = Vf - R*I
     x = np.arange(0, tempo + n, n)
     V = np.array([Resultado(t) for t in x])
 
