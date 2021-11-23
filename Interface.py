@@ -56,7 +56,7 @@ def RLCs():
         [sg.Text('Valor do Resistor em Ohms', size=(30, 0)), sg.Input(key='R', size=(10, 0))],
         [sg.Text('Valor do Capacitor em MicroFaradays:', size=(30, 0)), sg.Input(key='C', size=(10, 0))],
         [sg.Text('Valor do Indutor em MileHenrys:', size=(30, 0)), sg.Input(key='L', size=(10, 0))],
-        [sg.Text('Tensão sobre o:'), sg.Checkbox('Capacitor', key='Cap', size=(10, 0)),
+        [sg.Text('Saída  sobre o:'), sg.Checkbox('Capacitor', key='Cap', size=(10, 0)),
          sg.Checkbox('Indutor', key='Ind', size=(10, 0))],
         [sg.Button('Calcular', size=(10, 0)), sg.Button('Voltar', size=(10, 0))]
     ]
@@ -74,7 +74,7 @@ def RLCp():
         [sg.Text('Valor do Resistor em Ohms', size=(30, 0)), sg.Input(key='R', size=(10, 0))],
         [sg.Text('Valor do Capacitor em MicroFaradays:', size=(30, 0)), sg.Input(key='C', size=(10, 0))],
         [sg.Text('Valor do Indutor em MileHenrys:', size=(30, 0)), sg.Input(key='L', size=(10, 0))],
-        [sg.Text('Tensão sobre o:'), sg.Checkbox('Capacitor', key='Cap', size=(10, 0)),
+        [sg.Text('Saída  sobre o:'), sg.Checkbox('Capacitor', key='Cap', size=(10, 0)),
          sg.Checkbox('Indutor', key='Ind', size=(10, 0))],
         [sg.Button('Calcular', size=(10, 0)), sg.Button('Voltar', size=(10, 0))]
     ]
