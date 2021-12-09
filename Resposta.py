@@ -35,14 +35,20 @@ def grafico_tensão(R, C, L, Vf, Vi, tempo, tipo, Sobre=[0, 0], Ii=0):
     n = tempo / 1000
     x = np.arange(0, tempo + n, n)
 
-    if tipo == 'RC':
+    if tipo == 'RCs':
         Resultado = lambda t: Vf + ((Vi - Vf) * (exp(-(1 / (R * C)) * t)))  # Vc = Vf + (Vi - Vf)e^(-1/rc)t
-    elif tipo == 'RL':
+    elif tipo == 'RLs':
         If = Vf / R
-        Ii = Vi / R
+        Ii = Vi
         Corrente = lambda t: If + ((Ii - If) * (exp((-(R / L)) * t)))  # Il = If + (Ii - If)e^(-R/L)t
         Resultado = lambda t: Vf - R * Corrente(t)  # Vl = Vf - Vr = Vf - R*I
-    # RLC serie
+    elif tipo == 'RCp':
+        Resultado = lambda t: R*Vf + ((Vi - R*Vf) * (exp(-(1 / (R * C)) * t)))  # Vc = RIf + (Vi - RIf)e^(-1/rc)t
+    elif tipo == 'RLp':
+        If = Vf
+        Ii = Vi
+        Corrente = lambda t: If + ((Ii - If) * (exp((-(R / L)) * t)))  # Il = If + (Ii - If)e^(-R/L)t
+        Resultado = lambda t: (If - Corrente(t))*R  # Vl = Vf - Vr = Vf - R*I
     elif tipo == 'RLCs' and Sobre == [True, False]:  # Tensão sobre o Capacitor
         y0 = [Vi, Ii]
         sol = odeint(RLCs, y0, x, args=(R, L, C, Vf))
@@ -59,13 +65,24 @@ def grafico_tensão(R, C, L, Vf, Vi, tempo, tipo, Sobre=[0, 0], Ii=0):
         sol = odeint(RLCp, y0, x, args=(R, L, C, Vf))
         Il_linha = sol[:, 1]
         V = L*Il_linha
-    if tipo == 'RC' or tipo == 'RL':
+    if tipo == 'RCs' or tipo == 'RLs':
         V = np.array([Resultado(t) for t in x])
 
         plt.tight_layout()
         plt.style.use('ggplot')
         plt.plot(x * 1000, V, 'r-', label='Vcarga')
-        plt.title('Tesão sobre a carga')
+        plt.title('Tesão sobre a carga - Série')
+        plt.xlabel('t(ms)')
+        plt.ylabel('Vcarga(V)')
+        plt.legend(loc='best')
+        plt.show()
+    if tipo == 'RCp' or tipo == 'RLp':
+        V = np.array([Resultado(t) for t in x])
+
+        plt.tight_layout()
+        plt.style.use('ggplot')
+        plt.plot(x * 1000, V, 'r-', label='Vcarga')
+        plt.title('Tesão sobre a carga - Paralelo')
         plt.xlabel('t(ms)')
         plt.ylabel('Vcarga(V)')
         plt.legend(loc='best')
@@ -74,7 +91,7 @@ def grafico_tensão(R, C, L, Vf, Vi, tempo, tipo, Sobre=[0, 0], Ii=0):
         plt.tight_layout()
         plt.style.use('ggplot')
         plt.plot(x * 1000, V, 'r-', label='Vcarga')
-        plt.title('Tesão sobre a carga - Serie')
+        plt.title('Tesão sobre a carga - Série')
         plt.xlabel('t(ms)')
         plt.ylabel('Vcarga(V)')
         plt.legend(loc='best')
@@ -106,14 +123,20 @@ def grafico_corrente(R, C, L, Vf, Vi, tempo, tipo, Sobre=[0, 0], Ii=0):
     n = tempo / 1000
     x = np.arange(0, tempo + n, n)
 
-    if tipo == 'RC':
+    if tipo == 'RCs':
         Vc = lambda t: Vf + ((Vi - Vf) * (exp(-(1 / (R * C)) * t)))  # Vc = Vf + (Vi - Vf)e^(-1/rc)t
         Resultado = lambda t: (Vf - Vc(t))/R
-    elif tipo == 'RL':
+    elif tipo == 'RLs':
         If = Vf / R
-        Ii = Vi / R
+        Ii = Vi
         Resultado = lambda t: If + ((Ii - If) * (exp((-(R / L)) * t)))  # Il = If + (Ii - If)e^(-R/L)t
-    # RLC serie
+    elif tipo == 'RCp':
+        Vc = lambda t: R*Vf + ((Vi - R*Vf) * (exp(-(1 / (R * C)) * t)))  # Vc = Vf + (Vi - Vf)e^(-1/rc)t
+        Resultado = lambda t: (Vf - Vc(t)/R)
+    elif tipo =='RLp':
+        If = Vf
+        Ii = Vi
+        Resultado = lambda t: If + ((Ii - If) * (exp((-(R / L)) * t)))  # Il = If + (Ii - If)e^(-R/L)t
     elif tipo == 'RLCs':  # Tensão sobre o Capacitor
         y0 = [Vi, Ii]
         sol = odeint(RLCs, y0, x, args=(R, L, C, Vf))
@@ -130,13 +153,24 @@ def grafico_corrente(R, C, L, Vf, Vi, tempo, tipo, Sobre=[0, 0], Ii=0):
         Il_linha = sol[:, 1]
         Vc = L*Il_linha
         V = Vf - Vc/R - Il
-    if tipo == 'RC' or tipo == 'RL':
+    if tipo == 'RCs' or tipo == 'RLs':
         V = np.array([Resultado(t) for t in x])
 
         plt.tight_layout()
         plt.style.use('ggplot')
         plt.plot(x * 1000, V, 'r-', label='Icarga')
-        plt.title('Corrente sobre a carga')
+        plt.title('Corrente sobre a carga - Série')
+        plt.xlabel('t(ms)')
+        plt.ylabel('Icarga(A)')
+        plt.legend(loc='best')
+        plt.show()
+    elif tipo == 'RCp' or tipo == 'RLp':
+        V = np.array([Resultado(t) for t in x])
+
+        plt.tight_layout()
+        plt.style.use('ggplot')
+        plt.plot(x * 1000, V, 'r-', label='Icarga')
+        plt.title('Corrente sobre a carga - Paralelo')
         plt.xlabel('t(ms)')
         plt.ylabel('Icarga(A)')
         plt.legend(loc='best')
@@ -145,7 +179,7 @@ def grafico_corrente(R, C, L, Vf, Vi, tempo, tipo, Sobre=[0, 0], Ii=0):
         plt.tight_layout()
         plt.style.use('ggplot')
         plt.plot(x * 1000, V, 'r-', label='Icarga')
-        plt.title('Corrente sobre a carga - Serie')
+        plt.title('Corrente sobre a carga - Série')
         plt.xlabel('t(ms)')
         plt.ylabel('Icarga(A)')
         plt.legend(loc='best')
